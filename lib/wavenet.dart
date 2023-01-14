@@ -3,6 +3,7 @@ library text_to_speech_api;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 const BASE_URL = 'https://texttospeech.googleapis.com/v1/';
@@ -76,7 +77,7 @@ class TextToSpeechService {
     }
   }
 
-  Future<File> textToSpeech({
+  Future<dynamic> textToSpeech({
     required String text,
 
     /// Voice name.
@@ -132,6 +133,9 @@ class TextToSpeechService {
         // If the status code is 200, process the response
         final audioResponse = AudioResponse.fromJson(
             jsonDecode(await response.transform(utf8.decoder).join()));
+        if (kIsWeb) {
+          return audioResponse.audioContent;
+        }
         return _createMp3File(audioResponse);
       }
       // If the status code is not 200, throw an error
